@@ -1,30 +1,55 @@
-ARG PYTHON_VERSION=3.10-slim
+# Stage 1: Build the Application
+# We use python:3.11-slim as the base for building and installing dependencies.
+FROM python:3.11-slim AS build
 
-FROM python:${PYTHON_VERSION}
+# Set the working directory inside the container
+WORKDIR /usr/src/app
 
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# Install system dependencies needed for building Python packages
+RUN apt-get update && apt-get install -y --no-install-recommends     build-essential     gcc     libpq-dev     && rm -rf /var/lib/apt/lists/*
 
-# install psycopg2 dependencies.
-RUN apt-get update && apt-get install -y \
-    libpq-dev \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
+# Create a virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
-RUN mkdir -p /code
+# Copy requirements.txt if it exists (using wildcard to avoid build failure)
+COPY requirements.tx[t] ./requirements.txt
 
-WORKDIR /code
+# Install Python dependencies only if requirements.txt exists
+RUN pip install --upgrade pip &&     if [ -f requirements.txt ]; then         pip install -r requirements.txt &&         pip install gunicorn psycopg2-binary;     fi
 
-COPY requirements.txt /tmp/requirements.txt
-RUN set -ex && \
-    pip install --upgrade pip && \
-    pip install -r /tmp/requirements.txt && \
-    rm -rf /root/.cache/
-COPY . /code
+# Copy the rest of the application source code
+COPY . .
 
-ENV SECRET_KEY "brl6B65EK35gdJYoCP6xy7zTq7kDdL1fTzwbBXYUjiAAAxElsa"
+# Collect static files
 RUN python manage.py collectstatic --noinput
 
-EXPOSE 8000
+# Stage 2: Create the Final Production Image
+# We use python:3.11-slim as a minimal runtime image.
+FROM python:3.11-slim
 
-CMD ["gunicorn","--bind",":8000","--workers","2","config.wsgi"]
+# Set the working directory
+WORKDIR /usr/src/app
+
+# Install only runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends     libpq5     && rm -rf /var/lib/apt/lists/*
+
+# Copy the virtual environment from the build stage
+COPY --from=build /opt/venv /opt/venv
+
+# Copy the application code
+COPY --from=build /usr/src/app .
+
+# Set the virtual environment as the active Python environment
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Create a non-root user to run the application
+RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /usr/src/app
+USER appuser
+
+# Expose the port your app runs on
+ENV PORT=8080
+EXPOSE $PORT
+
+# Run database migrations and start the application
+CMD python manage.py migrate && gunicorn --bind 0.0.0.0:$PORT --workers 4 --threads 2 --timeout 120 myproject.wsgi:application
