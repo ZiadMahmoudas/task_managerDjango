@@ -1,10 +1,10 @@
-# fly.toml app configuration file generated for task-managerdjango on 2026-03-12T21:10:03Z
+# fly.toml app configuration file generated for task-managerdjango-cm2jcg on 2026-03-12T21:26:25Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'task-managerdjango'
-primary_region = 'iad'
+app = 'task-managerdjango-cm2jcg'
+primary_region = 'cdg'
 console_command = '/code/manage.py shell'
 
 [build]
@@ -16,7 +16,7 @@ console_command = '/code/manage.py shell'
   PORT = '8000'
 
 [http_service]
-  internal_port = 8000
+  internal_port = 8080
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true
