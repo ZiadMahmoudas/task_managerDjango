@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}All Tasks — Admin{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="fw-bold mb-0">
+    <i class="bi bi-kanban me-2"></i>All Tasks
+  </h2>
+  <a href="{% url 'dashboard:overview' %}" class="btn btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i>Dashboard
+  </a>
+</div>
+
+<!-- Filter Bar -->
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <form method="get" class="row g-2 align-items-end">
+      <div class="col-md-5">
+        {{ filter_form.search.label_tag }}
+        {{ filter_form.search }}
+      </div>
+      <div class="col-md-3">
+        {{ filter_form.status.label_tag }}
+        {{ filter_form.status }}
+      </div>
+      <div class="col-md-2">
+        {{ filter_form.priority.label_tag }}
+        {{ filter_form.priority }}
+      </div>
+      <div class="col-md-2 d-flex gap-2">
+        <button type="submit" class="btn btn-primary flex-grow-1">
+          <i class="bi bi-search"></i> Filter
+        </button>
+        <a href="{% url 'dashboard:tasks' %}" class="btn btn-outline-secondary">
+          <i class="bi bi-x-circle"></i>
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if tasks %}
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>Title</th>
+              <th>Owner</th>
+              <th>Status</th>
+              <th>Priority</th>
+              <th>Due Date</th>
+              <th>Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for task in tasks %}
+              <tr>
+                <td class="fw-semibold">{{ task.title|truncatechars:50 }}</td>
+                <td>
+                  <span class="badge bg-secondary">{{ task.user.username }}</span>
+                </td>
+                <td>
+                  <span class="badge bg-{{ task.status_badge_class }}">
+                    {{ task.get_status_display }}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge bg-{{ task.priority_badge_class }}">
+                    {{ task.get_priority_display }}
+                  </span>
+                </td>
+                <td class="text-muted small">
+                  {% if task.due_date %}{{ task.due_date|date:"M d, Y" }}{% else %}—{% endif %}
+                </td>
+                <td class="text-muted small">{{ task.created_at|date:"M d, Y" }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  {% if is_paginated %}
+    <nav class="mt-4 d-flex justify-content-center">
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Prev</a>
+          </li>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+          <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+          </li>
+        {% endfor %}
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+
+{% else %}
+  <div class="text-center py-5">
+    <i class="bi bi-inbox display-4 text-muted"></i>
+    <p class="text-muted mt-2">No tasks found.</p>
+  </div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}My Dashboard — TaskManager{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="fw-bold mb-0">
+    <i class="bi bi-speedometer2 me-2 text-primary"></i>
+    Welcome back, {{ user.username }}!
+  </h2>
+  <a href="{% url 'tasks:create' %}" class="btn btn-primary">
+    <i class="bi bi-plus-circle me-1"></i> New Task
+  </a>
+</div>
+
+<!-- Summary Stats -->
+<div class="row g-3 mb-4">
+
+  <div class="col-6 col-md-3">
+    <div class="card border-0 shadow-sm text-center h-100">
+      <div class="card-body">
+        <div class="display-5 fw-bold text-primary">{{ total_tasks }}</div>
+        <div class="text-muted small">Total Tasks</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6 col-md-3">
+    <div class="card border-0 shadow-sm text-center h-100">
+      <div class="card-body">
+        <div class="display-5 fw-bold text-warning">{{ pending_tasks }}</div>
+        <div class="text-muted small">Pending</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6 col-md-3">
+    <div class="card border-0 shadow-sm text-center h-100">
+      <div class="card-body">
+        <div class="display-5 fw-bold text-info">{{ in_progress_tasks }}</div>
+        <div class="text-muted small">In Progress</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6 col-md-3">
+    <div class="card border-0 shadow-sm text-center h-100">
+      <div class="card-body">
+        <div class="display-5 fw-bold text-success">{{ completed_tasks }}</div>
+        <div class="text-muted small">Completed</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Recent Tasks -->
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+    <h5 class="mb-0 fw-bold">
+      <i class="bi bi-clock-history me-2"></i>Recent Tasks
+    </h5>
+    <a href="{% url 'tasks:list' %}" class="btn btn-sm btn-outline-secondary">
+      View All
+    </a>
+  </div>
+  <div class="card-body p-0">
+
+    {% if recent_tasks %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Title</th>
+              <th>Status</th>
+              <th>Priority</th>
+              <th>Due Date</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for task in recent_tasks %}
+              <tr>
+                <td class="fw-semibold">{{ task.title }}</td>
+                <td>
+                  <span class="badge bg-{{ task.status_badge_class }}">
+                    {{ task.get_status_display }}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge bg-{{ task.priority_badge_class }}">
+                    {{ task.get_priority_display }}
+                  </span>
+                </td>
+                <td>
+                  {% if task.due_date %}
+                    <span class="{% if task.is_overdue %}text-danger fw-bold{% endif %}">
+                      {{ task.due_date|date:"M d, Y" }}
+                      {% if task.is_overdue %}<i class="bi bi-exclamation-triangle-fill"></i>{% endif %}
+                    </span>
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <a href="{{ task.get_absolute_url }}" class="btn btn-sm btn-outline-primary">
+                    View
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <!-- Empty state -->
+      <div class="text-center py-5">
+        <i class="bi bi-inbox display-4 text-muted"></i>
+        <p class="text-muted mt-2">You have no tasks yet.</p>
+        <a href="{% url 'tasks:create' %}" class="btn btn-primary">
+          Create your first task
+        </a>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,60 @@
+/*
+ * main.css
+ * Custom styles layered on top of Bootstrap 5.
+ * Keep additions minimal — Bootstrap covers most needs.
+ */
+
+/* Sidebar/dashboard card hover effect */
+.card {
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Sticky footer helper */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+}
+
+/* Navbar brand styling */
+.navbar-brand {
+  letter-spacing: 0.5px;
+}
+
+/* Table action buttons consistent sizing */
+.table .btn-sm {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+/* Overdue task highlight */
+tr.overdue td {
+  background-color: #fff5f5;
+}
+
+/* Badge font weight override for readability */
+.badge {
+  font-weight: 500;
+}
+
+/* Stat card numbers */
+.display-5,
+.display-6 {
+  font-weight: 700;
+}
+
+/* Form card max width on large screens */
+@media (min-width: 992px) {
+  .auth-card {
+    max-width: 420px;
+    margin: 0 auto;
+  }
+}
