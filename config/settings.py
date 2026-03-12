@@ -203,3 +203,5 @@ MESSAGE_TAGS = {
 SECURE_SSL_REDIRECT = False
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
+
+CSRF_TRUSTED_ORIGINS = ['https://task-managerdjango-cm2jcg.fly.dev']
