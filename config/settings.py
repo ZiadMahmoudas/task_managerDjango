@@ -40,17 +40,19 @@ DJANGO_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
-THIRD_PARTY_APPS = [
-    'django_extensions',
-]
+
 LOCAL_APPS = [
     'accounts.apps.AccountsConfig',
     'tasks.apps.TasksConfig',
     'dashboard.apps.DashboardConfig',
 ]
 
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+THIRD_PARTY_APPS = []
 
+if DEBUG:
+    THIRD_PARTY_APPS += ['django_extensions']
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 # ---------------------------------------------------------------------------
 # MIDDLEWARE
