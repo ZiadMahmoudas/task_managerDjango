@@ -25,8 +25,7 @@ SECRET_KEY = config('SECRET_KEY', default='change-me-in-production-use-a-real-se
 
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost', cast=Csv())
-
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost,task-managerdjango-cm2jcg.fly.dev', cast=Csv())
 
 # ---------------------------------------------------------------------------
 # INSTALLED APPS
