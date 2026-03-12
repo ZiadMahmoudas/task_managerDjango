@@ -52,4 +52,4 @@ ENV PORT=8080
 EXPOSE $PORT
 
 # Run database migrations and start the application
-CMD python manage.py migrate && gunicorn --bind 0.0.0.0:$PORT --workers 4 --threads 2 --timeout 120 task_managerDjango.wsgi:application
+CMD python manage.py migrate && gunicorn --bind 0.0.0.0:$PORT --workers 4 --threads 2 --timeout 120 config.wsgi:application
